@@ -16,12 +16,50 @@
 </head>
 <body>
 
-  <div class="container">
+  
+  <div class="container" x-data="{
+    tarefas: [],
+    novaTarefa: '',
+    adicionar() {
+      if (this.novaTarefa.trim()) {
+        this.tarefas.push({ texto: this.novaTarefa, feito: false });
+        this.novaTarefa = '';
+      }
+    },
+    remover(index) {
+      this.tarefas.splice(index, 1);
+    },
+    pendentes() {
+      return this.tarefas.filter(t => !t.feito).length;
+    }
+  }">
+
     <h1>Lista de Tarefas</h1>
-    <form action="">
-      <input type="text" placeholder="Nova tarefa...">
-      <button type="submit"> Adicionar </button>
+
+    <form action="" @submit.prevent="adicionar">
+      <input type="text" x-model="novaTarefa" placeholder="Nova tarefa...">
+      <button type="submit"> Adicionar</button>
     </form>
+
+    <template x-if="tarefas.length === 0">
+      <p class="pendentes">Nenhuma tarefa adicionada.</p>
+    </template>
+
+    <ul>
+        <template x-for="(tarefa, index) in tarefas" :key="index">
+          <li>
+            <div class="tarefa-texto">
+              <input type="checkbox" x-model="tarefa.feito">
+              <span :class="{ 'feito': tarefa.feito }" x-text="tarefa.texto"></span>
+            </div>
+            <button class="remover" @click="remover(index)">
+              Remover
+            </button>
+          </li>
+        </template>
+    </ul>
+
+    <p class="pendentes" x-text="'Tarefas pendentes: ' + pendentes()"></p>
   </div>
 
 </body>
